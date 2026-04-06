@@ -5,11 +5,11 @@ extern "C" {
 /* 下記の項目は各ロボットに合わせて変えること */
 
 /* カラーセンサの輝度設定 */
-#define WHITE_BRIGHTNESS  (40)
+#define WHITE_BRIGHTNESS  (45)
 #define BLACK_BRIGHTNESS  (10) 
 
 /* ステアリング操舵量の係数 */
-#define STEERING_COEF     (1.5F) 
+#define STEERING_COEF     (1.3F) 
 
 /* 走行基準スピード */
 #define BASE_SPEED        (30) 
