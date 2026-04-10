@@ -1,13 +1,11 @@
-USE_RASPIKE_ART=1
+APPL_COBJS += LineTracer.o
 
-mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
+# C++のオブジェクトファイルとして CameraControl.o を追加
+APPL_CXXOBJS += CameraControl.o
 
-APPL_COBJS +=\
-LineTracer.o\
+# インクルードパスの追加 (必要に応じて)
+INCLUDES += -I$(ETROBO_HRP3_WORKSPACE)/sample_c5_spike
 
-APPL_LIBS += -lm
-
-APPL_DIRS += $(mkfile_path)LineTracer
-
-INCLUDES += \
-	-I$(mkfile_path)LineTracer\
+# OpenCVを使用するためのライブラリリンク設定
+# ラズパイ上でビルドする場合、pkg-configを使ってパスを通すのが確実です
+LDLIBS += `pkg-config --libs opencv4`

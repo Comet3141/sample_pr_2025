@@ -1,27 +1,12 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LINETRACER_H
+#define LINETRACER_H
 
-/* 下記の項目は各ロボットに合わせて変えること */
+#include "spikeapi.h"
 
-/* カラーセンサの輝度設定 */
-#define WHITE_BRIGHTNESS  (45)
-#define BLACK_BRIGHTNESS  (10) 
+/* アプリケーション側(app.c)から1回だけ呼ばれる構成関数 */
+void LineTracer_Configure(pbio_port_id_t left_motor, pbio_port_id_t right_motor, pbio_port_id_t color_sensor);
 
-/* ステアリング操舵量の係数 */
-#define STEERING_COEF     (1.3F) 
+/* 周期タスク(app.cfg)から100msごとに呼ばれるライントレース関数 */
+void tracer_task(intptr_t exinf);
 
-/* 走行基準スピード */
-#define BASE_SPEED        (30) 
-
-/* ライントレースエッジ切り替え */
-#define LEFT_EDGE         (1) 
-#define RIGHT_EDGE        (1) 
-
-#include "pbio/port.h"  
-
-  extern void LineTracer_Configure(pbio_port_id_t left_motor_port, pbio_port_id_t right_motor_port, pbio_port_id_t color_sensor_port);
-  
-#ifdef __cplusplus
-}
-#endif
+#endif /* LINETRACER_H */

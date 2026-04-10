@@ -1,82 +1,63 @@
-#include "app.h"
 #include "LineTracer.h"
-#include <stdio.h>
-
 #include "spike/pup/motor.h"
 #include "spike/pup/colorsensor.h"
 
-/* 関数プロトタイプ宣言 */
-static int16_t steering_amount_calculation(void);
-static void motor_drive_control(int16_t);
+/* センサー・モーターのデバイスポインタを保持する変数 */
+static pup_motor_t *motor_left;
+static pup_motor_t *motor_right;
+static pup_device_t *color_sensor;
 
-static pup_motor_t *fg_left_motor;
-static pup_motor_t *fg_right_motor;
-static pup_device_t *fg_color_sensor;
+/* PID制御用のゲイン (環境に合わせて調整してください) */
+static const float Kp = 0.5f;
+static const float Ki = 0.01f;
+static const float Kd = 0.05f;
+static const int16_t target_lux = 50; /* 目標の反射光 (白と黒の中間) */
 
-void LineTracer_Configure(pbio_port_id_t left_motor_port, pbio_port_id_t right_motor_port, pbio_port_id_t color_sensor_port)
-{
+/* PID制御用の過去データ保持 */
+static float diff[2] = {0, 0};
+static float integral = 0;
 
-  /* センサー入力ポートの設定 */
-  fg_color_sensor = pup_color_sensor_get_device(color_sensor_port);
-  fg_left_motor   = pup_motor_get_device(left_motor_port);
-  fg_right_motor   = pup_motor_get_device(right_motor_port);  
-
-  pup_motor_setup(fg_left_motor,PUP_DIRECTION_COUNTERCLOCKWISE,true);
-  pup_motor_setup(fg_right_motor,PUP_DIRECTION_CLOCKWISE,true);  
-
+/* アプリケーション初期化時に app.c から呼ばれる関数 */
+void LineTracer_Configure(pbio_port_id_t left_motor, pbio_port_id_t right_motor, pbio_port_id_t color_sensor_port) {
+    motor_left = pup_motor_get_device(left_motor);
+    motor_right = pup_motor_get_device(right_motor);
+    color_sensor = pup_color_sensor_get_device(color_sensor_port);
+    
+    diff[0] = 0.0f;
+    diff[1] = 0.0f;
+    integral = 0.0f;
 }
 
+/* 100ms周期で自動的に実行されるライントレースタスク */
+void tracer_task(intptr_t exinf) {
+    /* 1. カラーセンサーから反射光を取得 */
+    int16_t current_lux = pup_color_sensor_reflection(color_sensor);
 
-/* ライントレースタスク(100msec周期で関数コールされる) */
-void tracer_task(intptr_t unused) {
+    /* 2. PID計算 */
+    float error = (float)(target_lux - current_lux);
+    
+    diff[0] = diff[1];
+    diff[1] = error;
+    integral += error;
 
-    int16_t steering_amount; /* ステアリング操舵量の計算 */
+    float p_term = Kp * diff[1];
+    float i_term = Ki * integral;
+    float d_term = Kd * (diff[1] - diff[0]);
 
-    /* ステアリング操舵量の計算 */
-    steering_amount = steering_amount_calculation();
+    float steering = p_term + i_term + d_term;
 
-    /* 走行モータ制御 */
-    motor_drive_control(steering_amount);
+    /* 3. モーターのパワー計算 */
+    int base_power = 30; /* 基本の走行パワー（直進速度） */
+    int left_power = base_power + (int)steering;
+    int right_power = base_power - (int)steering;
 
-    /* タスク終了 */
-    ext_tsk();
-}
+    /* パワーを -100 〜 100 の範囲に制限 */
+    if (left_power > 100) left_power = 100;
+    if (left_power < -100) left_power = -100;
+    if (right_power > 100) right_power = 100;
+    if (right_power < -100) right_power = -100;
 
-/* ステアリング操舵量の計算 */
-static int16_t steering_amount_calculation(void){
-
-    uint16_t  target_brightness; /* 目標輝度値 */
-    float32_t diff_brightness;   /* 目標輝度との差分値 */
-    int16_t   steering_amount;   /* ステアリング操舵量 */
-    int32_t   ref;
-
-    /* 目標輝度値の計算 */
-    target_brightness = (WHITE_BRIGHTNESS + BLACK_BRIGHTNESS) / 2;
-
-    /* カラーセンサ値の取得 */
-    ref = pup_color_sensor_reflection(fg_color_sensor);
-
-    /* 目標輝度値とカラーセンサ値の差分を計算 */
-    diff_brightness = (float32_t)(target_brightness - ref);
-
-    /* ステアリング操舵量を計算 */
-    steering_amount = (int16_t)(diff_brightness * STEERING_COEF);
-
-    return steering_amount;
-}
-
-/* 走行モータ制御 */
-static void motor_drive_control(int16_t steering_amount){
-
-    int left_motor_power, right_motor_power; /*左右モータ設定パワー*/
-
-    /* 左右モータ駆動パワーの計算(走行エッジを右にする場合はRIGHT_EDGEに書き換えること) */
-    left_motor_power  = (int)(BASE_SPEED + (steering_amount * LEFT_EDGE));
-    right_motor_power = (int)(BASE_SPEED - (steering_amount * LEFT_EDGE));
-
-    /* 左右モータ駆動パワーの設定 */
-    pup_motor_set_power(fg_left_motor, left_motor_power);
-    pup_motor_set_power(fg_right_motor, right_motor_power);
-
-    return;
+    /* 4. モーターへの出力 */
+    pup_motor_set_power(motor_left, left_power);
+    pup_motor_set_power(motor_right, right_power);
 }

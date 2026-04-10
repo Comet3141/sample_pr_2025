@@ -16,6 +16,7 @@ void main_task(intptr_t unused) {
   printf("+---------------------------------+\n");
   printf("|   Press force sensor to start   |\n");
   printf("+---------------------------------+\n");
+  
   /* フォースセンサーが押下されるまで待機 */
   pup_device_t *force_sensor = pup_force_sensor_get_device(force_sensor_port);
   while (!pup_force_sensor_touched(force_sensor)) {
@@ -23,7 +24,7 @@ void main_task(intptr_t unused) {
   }
 
   /* LineTracerに構成を渡す */
-  LineTracer_Configure(left_motor_port,right_motor_port,color_sensor_port);
+  LineTracer_Configure(left_motor_port, right_motor_port, color_sensor_port);
   printf("Start Line Trace!!\n");
     
   /* ライントレースタスクの起動 */
