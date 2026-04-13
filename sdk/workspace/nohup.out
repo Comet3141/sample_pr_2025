@@ -1,0 +1,133 @@
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+vdev initializer(fast) called
+initialize vdev
+VDEV_SERIAL_DEV_NAME not found. Use default device name
+VDEV USB name=/dev/USB_SPIKE
+SPIKE asp.bin version=0.1.0 expected=0.1.0
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for RasPi (Apr  8 2026, 14:31:19)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+====================>Beta 7<=
+Powered by TOPPERS/ASP3 RTOS of Hakoniwa
+System logging task is started.
+Ack Received port=4 cmd=32 data=1
+Ack Received port=3 cmd=64 data=1
+Ack Received port=1 cmd=96 data=1
+Ack Received port=1 cmd=97 data=1
+Ack Received port=0 cmd=96 data=1
+Ack Received port=0 cmd=97 data=1
+Ack Received port=1 cmd=101 data=1
+Ack Received port=0 cmd=101 data=1
+make: *** [Makefile:36: start] Terminated
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+make: *** [Makefile:36: start] Terminated
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+vdev initializer(fast) called
+initialize vdev
+VDEV_SERIAL_DEV_NAME not found. Use default device name
+VDEV USB name=/dev/USB_SPIKE
+SPIKE asp.bin version=0.1.0 expected=0.1.0
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for RasPi (Apr  8 2026, 14:38:17)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+====================>Beta 7<=
+Powered by TOPPERS/ASP3 RTOS of Hakoniwa
+System logging task is started.
+Ack Received port=4 cmd=32 data=1
+Ack Received port=3 cmd=64 data=1
+Ack Received port=1 cmd=96 data=1
+Ack Received port=1 cmd=97 data=1
+Ack Received port=0 cmd=96 data=1
+Ack Received port=0 cmd=97 data=1
+Ack Received port=1 cmd=101 data=1
+Ack Received port=0 cmd=101 data=1
+make: *** [Makefile:36: start] Terminated
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+vdev initializer(fast) called
+initialize vdev
+VDEV_SERIAL_DEV_NAME not found. Use default device name
+VDEV USB name=/dev/USB_SPIKE
+SPIKE asp.bin version=0.1.0 expected=0.1.0
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for RasPi (Apr  8 2026, 14:42:07)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+====================>Beta 7<=
+Powered by TOPPERS/ASP3 RTOS of Hakoniwa
+System logging task is started.
+Ack Received port=4 cmd=32 data=1
+Ack Received port=3 cmd=64 data=1
+Ack Received port=1 cmd=96 data=1
+Ack Received port=1 cmd=97 data=1
+Ack Received port=0 cmd=96 data=1
+Ack Received port=0 cmd=97 data=1
+Ack Received port=1 cmd=101 data=1
+Ack Received port=0 cmd=101 data=1
+make: *** [Makefile:36: start] Terminated
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+vdev initializer(fast) called
+initialize vdev
+VDEV_SERIAL_DEV_NAME not found. Use default device name
+VDEV USB name=/dev/USB_SPIKE
+SPIKE asp.bin version=0.1.0 expected=0.1.0
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for RasPi (Apr  8 2026, 14:43:04)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+====================>Beta 7<=
+Powered by TOPPERS/ASP3 RTOS of Hakoniwa
+System logging task is started.
+Ack Received port=4 cmd=32 data=1
+Ack Received port=3 cmd=64 data=1
+Ack Received port=1 cmd=96 data=1
+Ack Received port=1 cmd=97 data=1
+Ack Received port=0 cmd=96 data=1
+Ack Received port=0 cmd=97 data=1
+Ack Received port=1 cmd=101 data=1
+Ack Received port=0 cmd=101 data=1
+make: *** [Makefile:36: start] Terminated
+#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d ../common/device_config.txt
+sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d ../common/device_config.txt
+vdev initializer(fast) called
+initialize vdev
+VDEV_SERIAL_DEV_NAME not found. Use default device name
+VDEV USB name=/dev/USB_SPIKE
+SPIKE asp.bin version=0.1.0 expected=0.1.0
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for RasPi (Apr  8 2026, 14:45:53)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+====================>Beta 7<=
+Powered by TOPPERS/ASP3 RTOS of Hakoniwa
+System logging task is started.
+Ack Received port=4 cmd=32 data=1
+Ack Received port=3 cmd=64 data=1
+Ack Received port=1 cmd=96 data=1
+Ack Received port=1 cmd=97 data=1
+Ack Received port=0 cmd=96 data=1
+Ack Received port=0 cmd=97 data=1
+Ack Received port=1 cmd=101 data=1
+Ack Received port=0 cmd=101 data=1
+make: *** [Makefile:36: start] Terminated
