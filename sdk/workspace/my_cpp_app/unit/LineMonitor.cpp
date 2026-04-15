@@ -11,9 +11,8 @@
 
 
 // 定数宣言
-const int8_t LineMonitor::INITIAL_THRESHOLD_BLACK = 0;
-const int8_t LineMonitor::INITIAL_THRESHOLD_WHITE = 100;
-//上記カラーセンサの値は、環境やセンサの個体差によって異なるため、実際の値を確認して適切に設定するか、キャリブレーションで調整できるよう実装予定
+const int8_t LineMonitor::INITIAL_THRESHOLD_BLACK = 20;  // 黒色の光センサ値
+const int8_t LineMonitor::INITIAL_THRESHOLD_WHITE = 30;  // 白色の光センサ値
 
 /**
  * コンストラクタ

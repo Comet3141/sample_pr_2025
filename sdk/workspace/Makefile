@@ -1,47 +1,174 @@
 #
-# Makefile for a workspace of RasPike-ART Platform(ASP3).
+# Makefile for a workspace of EV3 Platform.
 #
 
 #
-# Include configurations of RasPike-ART (ASP3) SDK
+# Include configurations of EV3RT SDK
 #
-
 SDKDIR = ..
 WSPDIR = $(basename $(PWD))
-ASPMAKEFILE = Makefile.asp
-include ../common/Makefile.workspace
+include $(SDKDIR)/Makefile.sdk.conf
 
-ifeq ($(APPLDIR),)
-APPLDIR = $(shell cat appdir)
+# Configuration
+SRCLANG := c
+KERNEL := asp
+
+#
+# Functions
+#
+get_relpath = $(shell perl -MFile::Spec -e "print File::Spec->abs2rel(q($1),q($2))")
+
+#
+# Paths
+#
+KERNELDIR    := $(PWD)/$(SDKDIR)/$(EV3RT_BASE_DIR)
+OBJDIR       := $(PWD)/$(SDKDIR)/$(EV3RT_PRJ_OBJ_DIR)
+LIBKERNELDIR := $(PWD)/$(SDKDIR)/$(EV3RT_LIBKERNEL_DIR)
+#TARGETDIR    := $(PWD)/$(KERNELDIR)/target/ev3_gcc
+#TARGETDIR    := $(PWD)/$(KERNELDIR)/target/v850_gcc
+TARGETDIR    := $(PWD)/$(KERNELDIR)/target/raspi_gcc
+# Object files
+OBJFILENAME := $(KERNEL)
+ifneq (, $(findstring CYGWIN, $(shell uname)))
+    OBJFILENAME := $(OBJFILENAME).exe
+endif
+OBJBINARY := $(OBJDIR)/$(KERNEL).bin
+
+#
+# Determine Makefile for application
+# OUTPUT:
+# $(APPLDIR):         Absolute path of application folder
+# $(MKFILENAME):      File name of Makefile
+# $(MKFILE_DIR):      Absolute path of the folder holding Makefile
+#
+ifdef img
+APPLDIR := $(PWD)/$(img)
+MKFILENAME := Makefile.img
+endif
+ifdef app
+APPLDIR := $(PWD)/$(app)
+MKFILENAME := Makefile.app
+endif
+MKFILE_DIR := $(APPLDIR)
+ifeq (,$(wildcard $(mkfile_dir)/$(MKFILENAME)))
+MKFILE_DIR := $(SDKDIR)/common
+endif
+
+
+
+# Target for an application (static)
+#
+ifdef img
+
 include $(APPLDIR)/Makefile.inc
-endif
 
-DEVICE_CONFIG=../common/device_config.txt
-
+NEED_LIBRARIES:=
 ifneq ($(USE_RASPIKE_ART),)
-include ../common/Makefile.raspike-art
-DEVICE_CONFIG=../common/device_config_raspike-art.txt
+RASPIKE-ART_DIR=$(SDKDIR)/../libraspike-art
+LIBRASPIKE-ART_DIR=$(RASPIKE-ART_DIR)/lib
+LIBRASPIKE=ART=libraspike-art.a
+NEED_LIBRARIES+=$(LIBRASPIKE-ART_DIR)/$(LIBRASPIKE-ART)
+#include ../common/Makefile.raspike-art
+endif
 
+ifeq (,$(wildcard $(LIBKERNELDIR)/libkernel.a))
+# Build libkernel.a if not exist
+#img: $(APPLDIR) $(LIBKERNELDIR)/libkernel.a prepare-obj-folder
+NEED_LIBRARIES+=$(LIBKERNELDIR)/libkernel.a
+else
+#img: $(APPLDIR) prepare-obj-folder
+endif
+img: $(APPLDIR) $(NEED_LIBRARIES) prepare-obj-folder
+	(cd $(OBJDIR) && \
+	make kernel_cfg.h && \
+	make -j8 > /dev/null ) && \
+	cp $(OBJDIR)/$(OBJFILENAME) $(PWD) && \
+	echo "$(APPLDIR)" > $(PWD)/appdir
 
-
+$(LIBKERNELDIR)/libkernel.a: prepare-obj-folder
+	@cd $(OBJDIR) && \
+	make clean && \
+	make libkernel.a && \
+	cp libkernel.a $(LIBKERNELDIR)/libkernel.a
 
 endif
 
-CLEAN_FILES+=../../libraspike-art/lib/*.a
+#
+# Target for an application module (dynamic)
+#
+ifdef app
+
+include $(APPLDIR)/Makefile.inc
+
+app: $(APPLDIR) prepare-obj-folder
+	@cd $(OBJDIR) && \
+	make module_cfg.h && \
+	make -j8 && \
+	cp app $(PWD)/app # && cp app $(PWD)/app-$(subst /,,$(app))
+
+endif
+
+usage:
+	@echo make img="<folder>"
+	@echo make app="<folder>"
+	@echo "make upload [ip=<ev3_ip_address>] [from=<local_file_name>] [to=<remote_file_name>]"
+	@echo "make uploadimg [ip=<ev3_ip_address>] [from=<local_image_path>]"
+
+# TODO: check file name carefully
+ifndef ip # Default IP
+ip := 10.0.10.1
+endif
+ifndef from # Default local application (or uImage) file name
+from := app
+uploadimg: from := uImage
+endif
+ifndef to
+to := $(from)
+endif
+upload:
+	@echo = "Upload user application file"
+	@echo "  BT PAN IP: $(ip)"
+	@echo "  FILE NAME: (Local) \"$(from)\" -> (Remote) \"$(to)\""
+	@echo = "Execute cURL:"
+	@curl -f --noproxy "*" -H "Content-Type: ev3rt/app" -H 'Content-Disposition: inline; filename="$(to)"' --data-binary @$(from) http://$(ip)/upload > /dev/null
+	@echo = Application has been successfully uploaded.
+
+uploadimg:
+	@echo = "Upload uImage file"
+	@echo "  BT PAN IP: $(ip)"
+	@echo "  FILE NAME: (Local) \"$(from)\" -> (Remote) \"/uImage\""
+	@echo = "Execute cURL:"
+	@curl -f --noproxy "*" -H "Content-Type: ev3rt/img" --data-binary @$(from) http://$(ip)/upload > /dev/null
+	@echo = uImage has been successfully uploaded.
 
 
-start: appdir
-	$(ADDITIONAL_PRE_APPL)
-	#sudo env LD_PRELOAD=../common/setjmp/libssetjmp.so ./asp -d $(DEVICE_CONFIG)
-	sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d $(DEVICE_CONFIG)
+clean:
+	rm -rf $(OBJDIR) $(CLEAN_FILES)
 
-startsim: appdir
-	$(ADDITIONAL_PRE_APPL)
-	sudo env LD_PRELOAD=../common/setjmp/aarch64/libssetjmp.so ./asp -d $(DEVICE_CONFIG)
+realclean: clean
+	rm -rf $(notdir $(OBJFILENAME)) uImage app $(LIBKERNELDIR)/libkernel.a
 
-debug: appdir
-	$(ADDITIONAL_PRE_APPL)
-	gdb asp
-appdir:
-	@echo "make asp first!"
+#
+# Phony target for preparing $(OBJDIR) folder
+#
+ifdef app
+configure_copts := -DBUILD_MODULE
+endif
+prepare-obj-folder: clean
+	@mkdir -p $(OBJDIR)
+	cd $(OBJDIR) && \
+	ruby $(KERNELDIR)/configure.rb  -T raspi_gcc -A app \
+		-a $(call get_relpath,$(APPLDIR),$(OBJDIR)) \
+		-D $(call get_relpath,$(KERNELDIR),$(OBJDIR)) \
+		-l $(SRCLANG) \
+		-m $(call get_relpath,$(MKFILE_DIR)/$(MKFILENAME),$(OBJDIR)) \
+		-o "$(configure_copts)" \
+		-t \
+		-d ./dep \
+		-C ../common/athrill_common.cdl \
+		-U "$(APPLOBJS)" && \
+	make clean
+		# -S "banner.o syslog.o serial.o logtask.o" 
+
+.PHONY: clean realclean prepare-obj-folder img app
 

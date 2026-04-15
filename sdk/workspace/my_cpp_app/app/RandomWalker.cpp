@@ -1,128 +1,75 @@
 /******************************************************************************
- *  RandomWalker.cpp (for SPIKE )
- *  Created on: 2025/01/05
- *  Definition of the Class RandomWalker
- *  Author: Kenya Yabe
- *  Modifier: Yuki Tsuchitoi
- *  Copyright (c) 2025 Embedded Technology Software Design Robot Contest
+ * RandomWalker.cpp (for SPIKE )
  *****************************************************************************/
 
 #include <stdlib.h>
 #include "Clock.h"
-
 #include "RandomWalker.h"
 
-// 定数宣言
-const int RandomWalker::MIN_TIME = 5000 * 1000;    // 切り替え時間の最小値
-const int RandomWalker::MAX_TIME = 15000 * 1000;   // 切り替え時間の最大値
+const int RandomWalker::MIN_TIME = 5000 * 1000;
+const int RandomWalker::MAX_TIME = 15000 * 1000;
 
-/**
- * コンストラクタ
- * @param lineTracer      ライントレーサ
- * @param scenarioTracer  シナリオトレーサ
- * @param starter         スタータ  
- * @param simpleTimer     タイマ
- */
 RandomWalker::RandomWalker(LineTracer* lineTracer,
                            ScenarioTracer* scenarioTracer,
                            const Starter* starter,
-                           SimpleTimer* simpleTimer)
+                           SimpleTimer* simpleTimer,
+                           const spikeapi::Clock& clock)
     : mLineTracer(lineTracer),
       mScenarioTracer(scenarioTracer),
       mStarter(starter),
       mSimpleTimer(simpleTimer),
       mState(UNDEFINED) {
-    spikeapi::Clock* clock = new spikeapi::Clock();
-
-    srand(clock->now());  // 乱数をリセットする
-
-    delete clock;
+    
+    // 外部から渡された安全な clock を使用して乱数を初期化
+    srand(clock.now()); 
 }
 
-/**
- * ランダム走行する
- */
 void RandomWalker::run() {
     switch (mState) {
-    case UNDEFINED:
-        execUndefined();
-        break;
-    case WAITING_FOR_START:
-        execWaitingForStart();
-        break;
-    case LINE_TRACING:
-        execLineTracing();
-        break;
-    case SCENARIO_TRACING:
-        execScenarioTracing();
-        break;
-    default:
-        break;
+    case UNDEFINED: execUndefined(); break;
+    case WAITING_FOR_START: execWaitingForStart(); break;
+    case LINE_TRACING: execLineTracing(); break;
+    case SCENARIO_TRACING: execScenarioTracing(); break;
+    default: break;
     }
 }
 
-/**
- * 乱数を取得する
- * @retrun 乱数
- */
 int RandomWalker::getRandomTime() {
     return MIN_TIME +
         static_cast<int>(static_cast<double>(rand()) *
                          (MAX_TIME - MIN_TIME + 1.0) / (1.0 + RAND_MAX));
 }
 
-/**
- * シーン変更処理
- */
 void RandomWalker::modeChangeAction() {
     mSimpleTimer->setTime(getRandomTime());
     mSimpleTimer->start();
 }
 
-/**
- * 未定義状態の処理
- */
 void RandomWalker::execUndefined() {
     mState = WAITING_FOR_START;
 }
 
-/**
- * 開始待ち状態の処理
- */
 void RandomWalker::execWaitingForStart() {
     if (mStarter->isPushed()) {
         mState = LINE_TRACING;
-
         modeChangeAction();
     }
 }
 
-/**
- * ライントレース状態の処理
- */
 void RandomWalker::execLineTracing() {
     mLineTracer->run();
-
     if (mSimpleTimer->isTimedOut()) {
         mSimpleTimer->stop();
-
         mState = SCENARIO_TRACING;
-
         modeChangeAction();
     }
 }
 
-/**
- * シナリオトレース状態の処理
- */
 void RandomWalker::execScenarioTracing() {
     mScenarioTracer->run();
-
     if (mSimpleTimer->isTimedOut()) {
         mSimpleTimer->stop();
-
         mState = LINE_TRACING;
-
         modeChangeAction();
     }
 }

@@ -1,10 +1,5 @@
 /******************************************************************************
- *  RandomWalker.h (for SPIKE )
- *  Created on: 2025/01/05
- *  Definition of the Class RandomWalker
- *  Author: Kenya Yabe
- *  Modifier: Yuki Tsuchitoi
- *  Copyright (c) 2025 Embedded Technology Software Design Robot Contest
+ * RandomWalker.h (for SPIKE )
  *****************************************************************************/
 
 #ifndef ETTR_APP_RANDOMWALKER_H_
@@ -12,16 +7,18 @@
 
 #include "Starter.h"
 #include "SimpleTimer.h"
-
+#include "Clock.h"
 #include "LineTracer.h"
 #include "ScenarioTracer.h"
 
 class RandomWalker {
 public:
+    // 第5引数に clock を追加
     RandomWalker(LineTracer* lineTracer,
                  ScenarioTracer* scenarioTracer,
                  const Starter* starter,
-                 SimpleTimer* simpleTimer);
+                 SimpleTimer* simpleTimer,
+                 const spikeapi::Clock& clock);
 
     void run();
 

@@ -1,0 +1,39 @@
+/******************************************************************************
+ *  Walker.cpp (for SPIKE)
+ *  Created on: 2025/01/05
+ *  Implementation of the Class Walker
+ *  Author: Kazuhiro.Kawachi
+ *  Modifier: Yuki Tsuchitoi
+ *  Copyright (c) 2025 Embedded Technology Software Design Robot Contest
+ *****************************************************************************/
+
+#ifndef ETTR_UNIT_WALKER_H_
+#define ETTR_UNIT_WALKER_H_
+
+#include "Motor.h"
+
+class Walker {
+public:
+    static const int RIGHT_TURN = -30;  //左ターン時の制御値
+    static const int LEFT_TURN = 30;    //右ターン時の制御値
+  
+    Walker(spikeapi::Motor& leftWheel,
+                    spikeapi::Motor& rightWheel);
+
+    void init();
+    void run();
+    void setCommand(float turn);
+
+private:
+    spikeapi::Motor& mLeftWheel;
+    spikeapi::Motor& mRightWheel;
+    int mTurn;
+
+  #ifndef MAKE_RASPIKE
+    const int8_t pwm = 30;
+  #else
+    const int8_t pwm = 40;
+  #endif
+};
+
+#endif  // ETTR_UNIT_WALKER_H_
