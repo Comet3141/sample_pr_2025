@@ -26,8 +26,8 @@ Walker::Walker(spikeapi::Motor& leftWheel,
  */
 void Walker::run() {
     // 左右モータに回転を指示する   
-	mLeftWheel.setPower(pwm + mTurn); 
-	mRightWheel.setPower(pwm - mTurn);
+	mLeftWheel.setPower(pwm - mTurn); 
+	mRightWheel.setPower(pwm + mTurn);
 	
 }
 
